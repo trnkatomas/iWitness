@@ -28,24 +28,7 @@
         </div>        
       </div>
     </div>
-    
-    <div class="comment">
-      <a class="avatar">
-        <img src="jenny.jpg">
-      </a>
-      <div class="content">
-        <a class="author">Joe Henderson</a>
-        <div class="metadata">
-          <span class="date">5 days ago</span>
-        </div>
-        <div class="text">
-          Dude, this is awesome. Thanks so much
-        </div>
-        <div class="actions">
-          <a class="reply">Reply</a>
-        </div>
-      </div>
-    </div>
+
     <form id="reply_form" class="ui reply form">
       <div class="field">
         <textarea id="message_s"></textarea>
@@ -54,10 +37,6 @@
         <i class="icon edit"></i> Add Reply
       </div>
     </form>
-  </div>
-  <div class="ui fluid icon input">
-    <input type="file" placeholder="Image...">
-    <i class="search icon"></i>
   </div>
   </div> 
   <script>
@@ -69,17 +48,6 @@
             exampleSocket.send($("#message_s").val())
             $("#message_s").val('')
       });
-
-      document.querySelector('input[type="file"]').addEventListener('change', function() {
-      if (this.files && this.files[0]) {
-                var img = document.querySelector('img');
-                img.onload = () => {
-                    URL.revokeObjectURL(img.src);  // no longer needed, free memory
-                }
-
-                img.src = URL.createObjectURL(this.files[0]); // set src to blob url
-            }
-        });
 
       function create_message(user, message, actions, media){
         actions_data =  `<div class="actions">
@@ -102,7 +70,7 @@
                     <div class="text">
                         ${message}
                     </div>
-                    ${(actions)?actions_data:(media)?media_actions:''}                
+                    ${(actions)?actions_data:(media)?media_actions:''}
                 </div>`
         $("#reply_form").before(text)
       }
@@ -158,17 +126,6 @@
           create_message(false, 
           `We are all set, you location is as following: ${e.coords.latitude}, ${e.coords.longitude}?`,
           false, false);
-          create_message(false,
-          "Are you ready to submit suspicious befavior?",
-          false, true);
-          $( ".video" ).click(function( event ) {
-                event.preventDefault();
-                video_action();
-          });
-          $( ".sound" ).click(function( event ) {
-                event.preventDefault();
-                sound_action();
-          });
       })
 
       var exampleSocket = new WebSocket("ws://localhost:8765");//, 'echo-protocol');
@@ -211,6 +168,14 @@
     })
         .then(() => FingerprintJS.load())
 
+    function sleep(milliseconds) {
+        const date = Date.now();
+        let currentDate = null;
+        do {
+            currentDate = Date.now();
+        } while (currentDate - date < milliseconds);
+    }
+
     // Get the visitor identifier when you need it.
     fpPromise
         .then(fp => fp.get())
@@ -218,6 +183,22 @@
         // This is the visitor identifier:
         const visitorId = result.visitorId
         console.log(visitorId)
+        create_message(false, `Your anonymouse unique id is: ${visitorId}`, false, false);
+        create_message(false,
+          "Are you ready to submit suspicious befavior?",
+          false, true);
+          $( ".video" ).click(function( event ) {
+                event.preventDefault();
+                video_action();
+                //sleep(2000);
+                create_message(false, "Was there <em>bus</em> in the video?", false, false);
+          });
+          $( ".sound" ).click(function( event ) {
+                event.preventDefault();
+                sound_action();
+                //sleep(2000);
+                create_message(false, "Were people talking about surveilance?", false, false);
+          });
         })
 
   </script>

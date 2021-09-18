@@ -11,11 +11,17 @@ async def hello(websocket, path):
             print(f"Terminated")
             break
 
-        print(f"< {name}")
-        greeting = f"Hello {name}!"
+        name = name.lower().strip()
 
-        await websocket.send(greeting)
-        print(f"> {greeting}")
+        if name == "yes":
+            reply = f"Thanks for submission! Realy apreaciated"
+        elif name == "no":
+            reply = f"What was it then please?"
+        else:
+            reply = "Sorry I don't understand"
+
+        await websocket.send(reply)
+        print(f"> {reply}")
 
 async def main():
     async with websockets.serve(hello, "localhost", 8765):
