@@ -14,11 +14,12 @@ s3_response = s3_object.get()
 stream = io.BytesIO(s3_response["Body"].read())
 
 
-def process_image_rekognition(image):
+def process_image_rekognition(image, output):
     response = client_rekognition.detect_labels(Image={"Bytes": image.stream.read()})
     image.stream.seek(0)
-    draw = ImageDraw.Draw(image.stream)
-    imgWidth, imgHeight = image.size
+    image_jpg = Image.open(image.stream)
+    draw = ImageDraw.Draw(image_jpg)
+    imgWidth, imgHeight = image_jpg.size
 
     for label in response["Labels"]:
         name = label["Name"]
@@ -43,7 +44,7 @@ def process_image_rekognition(image):
 
         draw.text((left + 15, top + 15), name, font=font,
                   fill=(255, 0, 0, 255))  # , font=ImageFont.truetype("font_path123"))
-    image.save(output)
+    image_jpg.save(output)
 
 # image = Image.open(stream)
 # draw = ImageDraw.Draw(image)

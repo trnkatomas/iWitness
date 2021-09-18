@@ -6,13 +6,13 @@ from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 from process_image import process_image_rekognition
 
-
 UPLOAD_FOLDER = "static/uploads/"
 ALLOWED_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif"}
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.secret_key = 'super secret key'
+
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -36,7 +36,7 @@ def upload_image():
         filename = secure_filename(file.filename)
         # file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
         # print('upload_image filename: ' + filename)
-
+        process_image_rekognition(file, os.path.join( app.config["UPLOAD_FOLDER"], filename))
         flash("Image successfully uploaded and displayed below")
         return render_template("upload.html", filename=filename)
     else:
@@ -44,18 +44,11 @@ def upload_image():
         return redirect(request.url)
 
 
-@app.route("/display/<filename>")
+@app.route('/display/<filename>')
 def display_image(filename):
     # print('display_image filename: ' + filename)
-    return redirect(url_for("static", filename=app.config["UPLOAD_FOLDER"] + filename), code=301)
+    return redirect(url_for('static', filename='static/uploads/' + filename), code=301)
 
-@app.route("/process_image/<filename>")
-def process_image(filename):
-    output = "static/processed/" + filename
-    input = app.config["UPLOAD_FOLDER"] + filename
-    flash(output)
-    process_image_rekognition(input, output)
-    return redirect(url_for("static", filename=output), code=301)
 
 if __name__ == "__main__":
     app.run(debug=True)
