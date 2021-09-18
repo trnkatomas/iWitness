@@ -1,3 +1,7 @@
-[{"long": 41.28859829622097 ,"lag": 73.96473728960954, "irregulations" : 56, "carousel": 2, "vote_buy": 12},
-{"long": 42.830386870491715, "lag": 74.56016772669597, "irregulations": 45, "carousel": 5, "vote_buy": 6}
-]
+[{"long": 41.28859829622097 ,"lag": 73.96473728960954, "irregulations" : 17, "carousel": 2, "vote_buy": 12},
+{"long": 42.830386870491715, "lag": 74.56016772669597, "irregulations": 11, "carousel": 5, "vote_buy": 6},
+{"long": 40.504326, "lag": 72.805250,  "irregulations": 9, "carousel": 3, "vote_buy": 6}, 
+{"long": 41.367602,  "lag": 75.68978,  "irregulations": 12, "carousel": 8, "vote_buy": 4}, 
+{"long": 42.864021,  "lag": 74.584649,  "irregulations": 33, "carousel": 31, "vote_buy": 2}, 
+{"long": 42.838818,  "lag": 74.732062,  "irregulations": 12, "carousel": 8, "vote_buy": 4}, 
+{"long": 42.147758,  "lag": 77.549046,  "irregulations": 13, "carousel": 8, "vote_buy": 5}]
