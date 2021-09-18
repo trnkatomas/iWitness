@@ -97,7 +97,7 @@ var vectorSource = new ol.source.Vector({
 
 
 $.ajax({
-    url:'/static/long_lat2.json', 
+    url:'long_lat2.json', 
     success:function(response){
             var jsonlen = response.length;
             fLines = []
@@ -122,7 +122,7 @@ $.ajax({
                     anchor: [0.5, 1],
                     anchorXUnits: 'fraction',
                     anchorYUnits: 'fraction',
-                    src: '/static/lorry.png',
+                    src: 'location.png',
                     //size: [10, 10],
                     scale: 0.1,
                   }))
