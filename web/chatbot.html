@@ -55,6 +55,10 @@
       </div>
     </form>
   </div>
+  <div class="ui fluid icon input">
+    <input type="file" placeholder="Image...">
+    <i class="search icon"></i>
+  </div>
   </div> 
   <script>
       var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -65,6 +69,17 @@
             exampleSocket.send($("#message_s").val())
             $("#message_s").val('')
       });
+
+      document.querySelector('input[type="file"]').addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+                var img = document.querySelector('img');
+                img.onload = () => {
+                    URL.revokeObjectURL(img.src);  // no longer needed, free memory
+                }
+
+                img.src = URL.createObjectURL(this.files[0]); // set src to blob url
+            }
+        });
 
       function create_message(user, message, actions, media){
         actions_data =  `<div class="actions">
