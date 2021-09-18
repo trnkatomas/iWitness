@@ -48,9 +48,9 @@
     </div>
     <form id="reply_form" class="ui reply form">
       <div class="field">
-        <textarea></textarea>
+        <textarea id="message_s"></textarea>
       </div>
-      <div class="ui blue labeled submit icon button">
+      <div class="ui blue labeled submit icon button" id="submit_button">
         <i class="icon edit"></i> Add Reply
       </div>
     </form>
@@ -60,7 +60,11 @@
       var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       var today  = new Date();
       $("#init_message_date").text(today.toLocaleString("en-US"));//, options));
-      
+      $("#submit_button").on('click', function(evt){
+            create_message(true, $("#message_s").val(), false, false);
+            exampleSocket.send($("#message_s").val())
+            $("#message_s").val('')
+      });
 
       function create_message(user, message, actions, media){
         actions_data =  `<div class="actions">
@@ -171,9 +175,9 @@
 
       exampleSocket.onmessage = function(evt) {
         try{
-            let data = JSON.parse(evt.data)
+            // let data = JSON.parse(evt.data)
             // check if buffer arrived - the very first message from server
-            
+            create_message(false, evt.data, false, false);
         } catch (err){
             //console.log(`${err}, ${evt.data}`)
             console.log(`${err}`)
