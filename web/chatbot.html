@@ -55,22 +55,21 @@
       </div>
     </form>
   </div>
-  <div id="container">
-	<video autoplay="true" id="videoElement">
-	
-	</video>
-  </div>
   </div> 
   <script>
       var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       var today  = new Date();
       $("#init_message_date").text(today.toLocaleString("en-US"));//, options));
-          
+      
 
-      function create_message(user, message, actions){
+      function create_message(user, message, actions, media){
         actions_data =  `<div class="actions">
                             <a class="reply">Yes</a>
                             <a class="reply">No</a>
+                        </div>`
+        media_actions = `<div class="actions">
+                            <a class="sound">Sound</a>
+                            <a class="video">Video</a>
                         </div>`
         text = `<div class="comment">
                     <a class="avatar">
@@ -84,21 +83,21 @@
                     <div class="text">
                         ${message}
                     </div>
-                    ${(actions)?actions_data:''}                
+                    ${(actions)?actions_data:(media)?media_actions:''}                
                 </div>`
         $("#reply_form").before(text)
       }
-      
-      navigator.geolocation.getCurrentPosition((e)=>{
-          create_message(false, 
-          `We are all set, you location is as following: ${e.coords.latitude}, ${e.coords.longitude}?`,
-          false);
-      })
 
-      var video = document.querySelector("#videoElement");
+      function video_action(){
+        video_elem = `<div id="container">
+	        <video autoplay="true" id="videoElement">
+	        </video>
+        </div>`
+        $("#reply_form").before(video_elem)
+        var video = document.querySelector("#videoElement");
 
-      if (navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: true })
+        if (navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
             .then(function (stream) {
             video.srcObject = stream;
             })
@@ -106,6 +105,101 @@
             console.log("Something went wrong!");
             });
         }
+      }
+
+      function sound_action(){
+        video_elem = `<div id="container">
+	        <audio controls id="soundElement">
+	        </audio>
+        </div>`
+        $("#reply_form").before(video_elem)
+        var video = document.querySelector("#videoElement");
+
+        if (navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: false, audio:true })
+            .then(function (stream) {
+            window.localStream = stream;
+            window.localAudio.srcObject = stream;
+            window.localAudio.autoplay = true;
+                rec = new MediaRecorder(stream);
+                rec.ondataavailable = e => {
+                    audioChunks.push(e.data);
+                    if (rec.state == "inactive"){
+                    // Use blob to create a new Object URL and playback/download
+                    }
+                }
+            })
+            .catch(function (err0r) {
+            console.log("Something went wrong!");
+            });
+        }
+      }
+      
+      navigator.geolocation.getCurrentPosition((e)=>{
+          create_message(false, 
+          `We are all set, you location is as following: ${e.coords.latitude}, ${e.coords.longitude}?`,
+          false, false);
+          create_message(false,
+          "Are you ready to submit suspicious befavior?",
+          false, true);
+          $( ".video" ).click(function( event ) {
+                event.preventDefault();
+                video_action();
+          });
+          $( ".sound" ).click(function( event ) {
+                event.preventDefault();
+                sound_action();
+          });
+      })
+
+      var exampleSocket = new WebSocket("ws://localhost:8765");//, 'echo-protocol');
+
+      exampleSocket.onopen = function (event) {
+        console.log("Successfuly conneted to WS")
+        console.log("" + Date.now())
+        };
+
+      exampleSocket.onclose = function(evt) {
+            console.log("socket closed");
+            console.log("" + Date.now())
+        };
+
+      exampleSocket.onerror = function(evt) {
+            console.log("error occured");
+            console.log(`${evt}`);
+        };
+
+      exampleSocket.onmessage = function(evt) {
+        try{
+            let data = JSON.parse(evt.data)
+            // check if buffer arrived - the very first message from server
+            
+        } catch (err){
+            //console.log(`${err}, ${evt.data}`)
+            console.log(`${err}`)
+        }
+        };
+
+        // Initialize the agent at application startup.
+    const fpPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.onload = resolve
+        script.onerror = reject
+        script.async = true
+        script.src = 'https://cdn.jsdelivr.net/npm/'
+        + '@fingerprintjs/fingerprintjs@3/dist/fp.min.js'
+        document.head.appendChild(script)
+    })
+        .then(() => FingerprintJS.load())
+
+    // Get the visitor identifier when you need it.
+    fpPromise
+        .then(fp => fp.get())
+        .then(result => {
+        // This is the visitor identifier:
+        const visitorId = result.visitorId
+        console.log(visitorId)
+        })
 
   </script>
 </htlm>
