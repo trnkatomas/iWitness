@@ -48,29 +48,47 @@
     </div>
     <form id="reply_form" class="ui reply form">
       <div class="field">
-        <textarea></textarea>
+        <textarea id="message_s"></textarea>
       </div>
-      <div class="ui blue labeled submit icon button">
+      <div class="ui blue labeled submit icon button" id="submit_button">
         <i class="icon edit"></i> Add Reply
       </div>
     </form>
   </div>
-  <div id="container">
-	<video autoplay="true" id="videoElement">
-	
-	</video>
+  <div class="ui fluid icon input">
+    <input type="file" placeholder="Image...">
+    <i class="search icon"></i>
   </div>
   </div> 
   <script>
       var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       var today  = new Date();
       $("#init_message_date").text(today.toLocaleString("en-US"));//, options));
-          
+      $("#submit_button").on('click', function(evt){
+            create_message(true, $("#message_s").val(), false, false);
+            exampleSocket.send($("#message_s").val())
+            $("#message_s").val('')
+      });
 
-      function create_message(user, message, actions){
+      document.querySelector('input[type="file"]').addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+                var img = document.querySelector('img');
+                img.onload = () => {
+                    URL.revokeObjectURL(img.src);  // no longer needed, free memory
+                }
+
+                img.src = URL.createObjectURL(this.files[0]); // set src to blob url
+            }
+        });
+
+      function create_message(user, message, actions, media){
         actions_data =  `<div class="actions">
                             <a class="reply">Yes</a>
                             <a class="reply">No</a>
+                        </div>`
+        media_actions = `<div class="actions">
+                            <a class="sound">Sound</a>
+                            <a class="video">Video</a>
                         </div>`
         text = `<div class="comment">
                     <a class="avatar">
@@ -84,21 +102,21 @@
                     <div class="text">
                         ${message}
                     </div>
-                    ${(actions)?actions_data:''}                
+                    ${(actions)?actions_data:(media)?media_actions:''}                
                 </div>`
         $("#reply_form").before(text)
       }
-      
-      navigator.geolocation.getCurrentPosition((e)=>{
-          create_message(false, 
-          `We are all set, you location is as following: ${e.coords.latitude}, ${e.coords.longitude}?`,
-          false);
-      })
 
-      var video = document.querySelector("#videoElement");
+      function video_action(){
+        video_elem = `<div id="container">
+	        <video autoplay="true" id="videoElement">
+	        </video>
+        </div>`
+        $("#reply_form").before(video_elem)
+        var video = document.querySelector("#videoElement");
 
-      if (navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: true })
+        if (navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
             .then(function (stream) {
             video.srcObject = stream;
             })
@@ -106,6 +124,101 @@
             console.log("Something went wrong!");
             });
         }
+      }
+
+      function sound_action(){
+        video_elem = `<div id="container">
+	        <audio controls id="soundElement">
+	        </audio>
+        </div>`
+        $("#reply_form").before(video_elem)
+        var video = document.querySelector("#videoElement");
+
+        if (navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: false, audio:true })
+            .then(function (stream) {
+            window.localStream = stream;
+            window.localAudio.srcObject = stream;
+            window.localAudio.autoplay = true;
+                rec = new MediaRecorder(stream);
+                rec.ondataavailable = e => {
+                    audioChunks.push(e.data);
+                    if (rec.state == "inactive"){
+                    // Use blob to create a new Object URL and playback/download
+                    }
+                }
+            })
+            .catch(function (err0r) {
+            console.log("Something went wrong!");
+            });
+        }
+      }
+      
+      navigator.geolocation.getCurrentPosition((e)=>{
+          create_message(false, 
+          `We are all set, you location is as following: ${e.coords.latitude}, ${e.coords.longitude}?`,
+          false, false);
+          create_message(false,
+          "Are you ready to submit suspicious befavior?",
+          false, true);
+          $( ".video" ).click(function( event ) {
+                event.preventDefault();
+                video_action();
+          });
+          $( ".sound" ).click(function( event ) {
+                event.preventDefault();
+                sound_action();
+          });
+      })
+
+      var exampleSocket = new WebSocket("ws://localhost:8765");//, 'echo-protocol');
+
+      exampleSocket.onopen = function (event) {
+        console.log("Successfuly conneted to WS")
+        console.log("" + Date.now())
+        };
+
+      exampleSocket.onclose = function(evt) {
+            console.log("socket closed");
+            console.log("" + Date.now())
+        };
+
+      exampleSocket.onerror = function(evt) {
+            console.log("error occured");
+            console.log(`${evt}`);
+        };
+
+      exampleSocket.onmessage = function(evt) {
+        try{
+            // let data = JSON.parse(evt.data)
+            // check if buffer arrived - the very first message from server
+            create_message(false, evt.data, false, false);
+        } catch (err){
+            //console.log(`${err}, ${evt.data}`)
+            console.log(`${err}`)
+        }
+        };
+
+        // Initialize the agent at application startup.
+    const fpPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.onload = resolve
+        script.onerror = reject
+        script.async = true
+        script.src = 'https://cdn.jsdelivr.net/npm/'
+        + '@fingerprintjs/fingerprintjs@3/dist/fp.min.js'
+        document.head.appendChild(script)
+    })
+        .then(() => FingerprintJS.load())
+
+    // Get the visitor identifier when you need it.
+    fpPromise
+        .then(fp => fp.get())
+        .then(result => {
+        // This is the visitor identifier:
+        const visitorId = result.visitorId
+        console.log(visitorId)
+        })
 
   </script>
 </htlm>
