@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>ML image recognition</title>
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+<script
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>   
+</head>
+<body>
+    
+<div class="ui container"></div>
+<form class="ui form" axtion="/submit_image" method="post">>
+    <div class="field">
+      <label>Dummy input</label>
+      <input type="text" name="first-name" placeholder="First Name">
+    </div>
+    <div class="field">
+        <label>Dummy input</label>
+        <input type="file" name="file" placeholder="Image">
+    </div>
+    <div class="field">
+      <div class="ui checkbox">
+        <input type="checkbox" tabindex="0" class="hidden">
+        <label>I agree to the Terms and Conditions</label>
+      </div>
+    </div>
+    <button class="ui button" type="submit">Submit</button>
+</form>
+</div>
+</body>
+</html>
