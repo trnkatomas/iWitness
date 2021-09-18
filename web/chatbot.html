@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>iWitness</title>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+<script
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>   
+</head>
+<div class="ui container">
+<div class="ui comments">
+    <h3 class="ui dividing header">iWitness</h3>
+    <div class="comment">
+      <a class="avatar">
+        <img src="flag.png">
+      </a>
+      <div class="content">
+        <a class="author">iWitness</a>
+        <div class="metadata">
+          <span class="date" id="init_message_date"></span>
+        </div>
+        <div class="text">
+          Hello, I'm ready for your report!
+        </div>        
+      </div>
+    </div>
+    
+    <div class="comment">
+      <a class="avatar">
+        <img src="jenny.jpg">
+      </a>
+      <div class="content">
+        <a class="author">Joe Henderson</a>
+        <div class="metadata">
+          <span class="date">5 days ago</span>
+        </div>
+        <div class="text">
+          Dude, this is awesome. Thanks so much
+        </div>
+        <div class="actions">
+          <a class="reply">Reply</a>
+        </div>
+      </div>
+    </div>
+    <form id="reply_form" class="ui reply form">
+      <div class="field">
+        <textarea></textarea>
+      </div>
+      <div class="ui blue labeled submit icon button">
+        <i class="icon edit"></i> Add Reply
+      </div>
+    </form>
+  </div>
+  <div id="container">
+	<video autoplay="true" id="videoElement">
+	
+	</video>
+  </div>
+  </div> 
+  <script>
+      var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      var today  = new Date();
+      $("#init_message_date").text(today.toLocaleString("en-US"));//, options));
+          
+
+      function create_message(user, message, actions){
+        actions_data =  `<div class="actions">
+                            <a class="reply">Yes</a>
+                            <a class="reply">No</a>
+                        </div>`
+        text = `<div class="comment">
+                    <a class="avatar">
+                        <img src="${(user) ? 'jenny.jpg': 'flag.png'}">
+                    </a>
+                    <div class="content">
+                        <a class="author">${(user) ? 'Joe': 'iWitness'} </a>
+                        <div class="metadata">
+                        <span class="date">${new Date().toLocaleString("en-US")}</span>
+                    </div>
+                    <div class="text">
+                        ${message}
+                    </div>
+                    ${(actions)?actions_data:''}                
+                </div>`
+        $("#reply_form").before(text)
+      }
+      
+      navigator.geolocation.getCurrentPosition((e)=>{
+          create_message(false, 
+          `We are all set, you location is as following: ${e.coords.latitude}, ${e.coords.longitude}?`,
+          false);
+      })
+
+      var video = document.querySelector("#videoElement");
+
+      if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+            video.srcObject = stream;
+            })
+            .catch(function (err0r) {
+            console.log("Something went wrong!");
+            });
+        }
+
+  </script>
+</htlm>
